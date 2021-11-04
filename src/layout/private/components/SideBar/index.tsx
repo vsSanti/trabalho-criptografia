@@ -1,9 +1,7 @@
 import { Layout, Menu } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { matchPath, NavLink, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 
-import { LanguageSelector, Logo } from 'components';
 import { PATHS } from 'routes/enums';
 
 import './styles.scss';
@@ -12,7 +10,6 @@ const { Sider } = Layout;
 
 const SideBar: FC = () => {
   const location = useLocation();
-  const { t } = useTranslation();
 
   const [selectedKey, setSelectedKey] = useState<string>('');
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
@@ -42,20 +39,16 @@ const SideBar: FC = () => {
       }}
     >
       <div className="logo-container">
-        <NavLink to="/dashboard">
-          <Logo className="logo-img" onlyLetter={isCollapsed} />
-        </NavLink>
+        <NavLink to="/dashboard">Trabalho 4 STI</NavLink>
       </div>
 
       <Menu mode="inline" selectedKeys={[selectedKey]}>
-        {Object.values(PATHS).map((obj) => (
-          <Menu.Item key={obj.key} icon={<obj.Icon />}>
-            <NavLink to={obj.path}>{t(obj.name)}</NavLink>
+        {Object.values(PATHS).map((path) => (
+          <Menu.Item key={path.key} icon={<path.Icon />}>
+            <NavLink to={path.path}>{path.name}</NavLink>
           </Menu.Item>
         ))}
       </Menu>
-
-      <LanguageSelector />
     </Sider>
   );
 };
