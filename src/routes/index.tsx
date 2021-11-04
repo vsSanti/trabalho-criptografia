@@ -1,61 +1,25 @@
-import { ConfigProvider } from 'antd';
-import ptBR from 'antd/es/locale/pt_BR';
-import enUS from 'antd/es/locale/en_US';
-import { FC, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FC } from 'react';
 
-import { useAuth } from 'hooks';
-import { Loader } from 'components';
-import { api } from 'services';
+import { Redirect } from 'react-router-dom';
 
-import { PrivateRoutes } from './PrivateRoutes';
-import { PublicRoutes } from './PublicRoutes';
+import { PrivateLayout } from 'layout';
+
+import { AnimatedRoutes, RouteTransition } from './components';
+import { PATHS } from './enums';
 
 const Routes: FC = () => {
-  const { i18n } = useTranslation();
-  const {
-    user,
-    getLoggedUser,
-    refreshToken,
-    credentials,
-    loadingUser,
-  } = useAuth();
-
-  useEffect(() => {
-    api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        if (
-          error?.response?.config?.url !== '/tokens/refresh' &&
-          error?.response?.status === 401
-        ) {
-          return refreshToken();
-        }
-
-        return Promise.reject(error);
-      },
-    );
-
-    const { access_token, refresh_token } = credentials;
-    if (!access_token || !refresh_token) return;
-
-    getLoggedUser();
-  }, [credentials, getLoggedUser, refreshToken]);
-
-  const routes = useMemo(() => {
-    const { access_token, refresh_token } = credentials;
-
-    if ((loadingUser || !user) && access_token && refresh_token) {
-      return <Loader loading />;
-    }
-
-    return user ? <PrivateRoutes /> : <PublicRoutes />;
-  }, [credentials, loadingUser, user]);
-
   return (
-    <ConfigProvider locale={i18n.language === 'pt-BR' ? ptBR : enUS}>
-      {routes}
-    </ConfigProvider>
+    <PrivateLayout>
+      <AnimatedRoutes exitBeforeEnter initial={false}>
+        {Object.values(PATHS).map((obj) => (
+          <RouteTransition key={obj.key} exact path={obj.path} slide={10}>
+            <obj.Component />
+          </RouteTransition>
+        ))}
+
+        <Redirect to="/dashboard" />
+      </AnimatedRoutes>
+    </PrivateLayout>
   );
 };
 
