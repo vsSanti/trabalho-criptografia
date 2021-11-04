@@ -1,5 +1,6 @@
 export type CipherProps = {
   inputText: string;
-  cipher: number;
+  cipher: number | string;
   type: 'cipher' | 'decipher';
+  method: 'caesar' | 'vigenere';
 };
