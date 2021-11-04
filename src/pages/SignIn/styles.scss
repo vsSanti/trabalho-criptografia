@@ -1,0 +1,24 @@
+#signin-page {
+  .ant-form.ant-form-vertical {
+    margin-top: 70px;
+
+    .ant-col.ant-form-item-label {
+      display: none;
+    }
+
+    .alert {
+      &-visible {
+        opacity: 1;
+        transition: opacity 0.3s;
+      }
+
+      &-invisible {
+        opacity: 0;
+      }
+    }
+
+    #submit-button {
+      margin-top: 20px;
+    }
+  }
+}

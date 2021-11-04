@@ -1,0 +1,15 @@
+#side-bar {
+  overflow: auto;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  left: 0;
+
+  .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px 0;
+  }
+}
