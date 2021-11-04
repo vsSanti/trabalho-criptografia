@@ -14,7 +14,7 @@ export const PrivateLayout: FC = ({ children }) => {
       <Layout id="content-layout">
         <Header />
         <Content className="content">{children}</Content>
-        <Footer>Nutricionista.App © {new Date().getFullYear()}</Footer>
+        <Footer>Criptografia © {new Date().getFullYear()}</Footer>
       </Layout>
     </Layout>
   );
