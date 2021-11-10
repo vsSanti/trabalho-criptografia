@@ -3,25 +3,55 @@ import CryptoJS from 'crypto-js';
 
 import { CipherProps } from '../@types';
 
-const desEncryption = (data: CipherProps, mode: any): string => {
-  const encrypted = CryptoJS.DES.encrypt(
-    String(data.inputText),
-    String(data.cipher),
-    { mode },
-  );
+type EncryptionType = 'des' | '3des';
 
-  return encrypted.toString();
+type MethodProps = {
+  data: CipherProps;
+  mode: any;
+  type: EncryptionType;
 };
 
-const desDecryption = (data: CipherProps, mode: any): string => {
-  const decrypted = CryptoJS.DES.decrypt(data.inputText, String(data.cipher), {
-    mode,
-  }).toString(CryptoJS.enc.Utf8);
+const desEncryption = ({ data, mode, type }: MethodProps): string => {
+  if (type === 'des') {
+    const encrypted = CryptoJS.DES.encrypt(
+      String(data.inputText),
+      String(data.cipher),
+      { mode },
+    );
 
-  return decrypted;
+    return encrypted.toString();
+  }
+
+  if (type === '3des') {
+    const encrypted = CryptoJS.TripleDES.encrypt(
+      String(data.inputText),
+      String(data.cipher),
+      { mode },
+    );
+
+    return encrypted.toString();
+  }
+
+  return 'error encryption';
 };
 
-export const desMethod = (data: CipherProps): string => {
+const desDecryption = ({ data, mode, type }: MethodProps): string => {
+  if (type === 'des') {
+    return CryptoJS.DES.decrypt(data.inputText, String(data.cipher), {
+      mode,
+    }).toString(CryptoJS.enc.Utf8);
+  }
+
+  if (type === '3des') {
+    return CryptoJS.TripleDES.decrypt(data.inputText, String(data.cipher), {
+      mode,
+    }).toString(CryptoJS.enc.Utf8);
+  }
+
+  return 'error decryption';
+};
+
+export const desMethod = (data: CipherProps, type: EncryptionType): string => {
   let mode: any;
   switch (data.mode) {
     case 'cbc':
@@ -46,7 +76,7 @@ export const desMethod = (data: CipherProps): string => {
 
   try {
     if (data.type === 'cipher') {
-      return desEncryption(data, mode);
+      return desEncryption({ data, mode, type });
     }
 
     const cleanedInputText = data.inputText.replace(
@@ -54,7 +84,11 @@ export const desMethod = (data: CipherProps): string => {
       '',
     );
 
-    return desDecryption({ ...data, inputText: cleanedInputText }, mode);
+    return desDecryption({
+      data: { ...data, inputText: cleanedInputText },
+      mode,
+      type,
+    });
   } catch (error) {
     message.error('Erro ao realizar operação!');
     return 'error';

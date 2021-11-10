@@ -36,11 +36,15 @@ export const Dashboard: FC = () => {
           outputText = vigenereCipher(data);
           break;
         case 'des':
-          outputText = desMethod({
-            ...data,
-            inputText: fileData?.base64 || '',
-            fileName: fileData?.fileName || '',
-          });
+        case '3des':
+          outputText = desMethod(
+            {
+              ...data,
+              inputText: fileData?.base64 || '',
+              fileName: fileData?.fileName || '',
+            },
+            data.method,
+          );
           break;
         default:
           outputText = 'Método não definido';
@@ -100,7 +104,7 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['des'].includes(cipherMethod) && (
+            {['des', '3des'].includes(cipherMethod) && (
               <Form.Item
                 label="Arquivo de entrada"
                 name="inputFile"
@@ -139,6 +143,7 @@ export const Dashboard: FC = () => {
                 <Option value="caesar">César</Option>
                 <Option value="vigenere">Vigenère</Option>
                 <Option value="des">DES</Option>
+                <Option value="3des">3DES</Option>
               </Select>
             </Form.Item>
 
@@ -163,7 +168,7 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['vigenere', 'des'].includes(cipherMethod) && (
+            {['vigenere', 'des', '3des'].includes(cipherMethod) && (
               <Form.Item
                 label="Cifra"
                 name="cipher"
@@ -173,7 +178,7 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['des'].includes(cipherMethod) && (
+            {['des', '3des'].includes(cipherMethod) && (
               <Form.Item
                 label="Modo"
                 name="mode"
@@ -198,7 +203,7 @@ export const Dashboard: FC = () => {
             <Form.Item label="Texto de saída" name="outputText">
               <Input.TextArea rows={10} disabled />
             </Form.Item>
-            {['des'].includes(cipherMethod) && (
+            {['des', '3des'].includes(cipherMethod) && (
               <Button htmlType="button" onClick={handleDownloadFile}>
                 Download do arquivo
               </Button>
