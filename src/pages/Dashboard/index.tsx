@@ -1,13 +1,26 @@
 import { FC, useCallback, useState } from 'react';
-import { Button, Card, Col, Form, Input, InputNumber, Row, Select } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select,
+  Upload,
+} from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
 
-import { CipherProps } from './@types';
-import { caesarCipher, vigenereCipher } from './utils';
+import { CipherProps, FileProps } from './@types';
+import { caesarCipher, desMethod, downloadFile, vigenereCipher } from './utils';
 
+const { Dragger } = Upload;
 const { Option } = Select;
 
 export const Dashboard: FC = () => {
   const [cipherMethod, setCipherMethod] = useState('');
+  const [fileData, setFileData] = useState<FileProps>();
 
   const [form] = Form.useForm();
 
@@ -22,6 +35,13 @@ export const Dashboard: FC = () => {
         case 'vigenere':
           outputText = vigenereCipher(data);
           break;
+        case 'des':
+          outputText = desMethod({
+            ...data,
+            inputText: fileData?.base64 || '',
+            fileName: fileData?.fileName || '',
+          });
+          break;
         default:
           outputText = 'Método não definido';
           break;
@@ -29,8 +49,33 @@ export const Dashboard: FC = () => {
 
       form.setFieldsValue({ outputText });
     },
-    [form],
+    [form, fileData],
   );
+
+  const handleDownloadFile = useCallback(async () => {
+    const outputText = form.getFieldValue('outputText');
+    const type = form.getFieldValue('type');
+
+    const fileName = fileData?.fileName || 'arquivo';
+
+    downloadFile(outputText, fileName, type);
+  }, [form, fileData]);
+
+  const handleBeforeUpload = useCallback((file) => {
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const base64 = e?.target?.result;
+      setFileData({
+        base64: String(base64),
+        fileName: file.name,
+      });
+    };
+
+    reader.readAsDataURL(file);
+
+    return false;
+  }, []);
 
   return (
     <Form
@@ -43,15 +88,43 @@ export const Dashboard: FC = () => {
       <Row>
         <Col span={9}>
           <Card>
-            <Form.Item
-              label="Texto de entrada"
-              name="inputText"
-              rules={[
-                { required: true, message: 'Informe o texto de entrada!' },
-              ]}
-            >
-              <Input.TextArea rows={10} />
-            </Form.Item>
+            {['caesar', 'vigenere'].includes(cipherMethod) && (
+              <Form.Item
+                label="Texto de entrada"
+                name="inputText"
+                rules={[
+                  { required: true, message: 'Informe o texto de entrada!' },
+                ]}
+              >
+                <Input.TextArea rows={10} />
+              </Form.Item>
+            )}
+
+            {['des'].includes(cipherMethod) && (
+              <Form.Item
+                label="Arquivo de entrada"
+                name="inputFile"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Informe o texto de entrada!',
+                  },
+                ]}
+              >
+                <Dragger maxCount={1} beforeUpload={handleBeforeUpload}>
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Clique ou arraste um arquivo para essa área para fazer
+                    upload
+                  </p>
+                  <p className="ant-upload-hint">
+                    Somente um arquivo pode ser selecionado.
+                  </p>
+                </Dragger>
+              </Form.Item>
+            )}
           </Card>
         </Col>
 
@@ -65,6 +138,7 @@ export const Dashboard: FC = () => {
               <Select onSelect={(data: string) => setCipherMethod(data)}>
                 <Option value="caesar">César</Option>
                 <Option value="vigenere">Vigenère</Option>
+                <Option value="des">DES</Option>
               </Select>
             </Form.Item>
 
@@ -89,7 +163,7 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['vigenere'].includes(cipherMethod) && (
+            {['vigenere', 'des'].includes(cipherMethod) && (
               <Form.Item
                 label="Cifra"
                 name="cipher"
@@ -99,7 +173,23 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            <Button htmlType="submit">Encriptar</Button>
+            {['des'].includes(cipherMethod) && (
+              <Form.Item
+                label="Modo"
+                name="mode"
+                rules={[{ required: true, message: 'Informe o modo!' }]}
+              >
+                <Select>
+                  <Option value="ecb">ECB</Option>
+                  <Option value="cbc">CBC</Option>
+                  <Option value="cfb">CFB</Option>
+                  <Option value="ofb">OFB</Option>
+                  <Option value="ctr">CTR</Option>
+                </Select>
+              </Form.Item>
+            )}
+
+            <Button htmlType="submit">Transformar</Button>
           </Card>
         </Col>
 
@@ -108,6 +198,11 @@ export const Dashboard: FC = () => {
             <Form.Item label="Texto de saída" name="outputText">
               <Input.TextArea rows={10} disabled />
             </Form.Item>
+            {['des'].includes(cipherMethod) && (
+              <Button htmlType="button" onClick={handleDownloadFile}>
+                Download do arquivo
+              </Button>
+            )}
           </Card>
         </Col>
       </Row>

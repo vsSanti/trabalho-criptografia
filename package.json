@@ -27,6 +27,7 @@
     "@testing-library/user-event": "^12.8.3",
     "antd": "^4.14.0",
     "classnames": "^2.2.6",
+    "crypto-js": "^4.1.1",
     "framer-motion": "^3.10.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.11",
+    "@types/crypto-js": "^4.0.2",
     "@types/jest": "^26.0.20",
     "@types/node": "^12.20.5",
     "@types/react": "^17.0.3",
