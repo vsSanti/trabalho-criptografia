@@ -13,7 +13,13 @@ import {
 import { InboxOutlined } from '@ant-design/icons';
 
 import { CipherProps, FileProps } from './@types';
-import { caesarCipher, desMethod, downloadFile, vigenereCipher } from './utils';
+import {
+  caesarCipher,
+  desMethod,
+  downloadFile,
+  otpMethod,
+  vigenereCipher,
+} from './utils';
 
 const { Dragger } = Upload;
 const { Option } = Select;
@@ -31,6 +37,9 @@ export const Dashboard: FC = () => {
       switch (data.method) {
         case 'caesar':
           outputText = caesarCipher(data);
+          break;
+        case 'otp':
+          outputText = otpMethod(data);
           break;
         case 'vigenere':
           outputText = vigenereCipher(data);
@@ -92,7 +101,7 @@ export const Dashboard: FC = () => {
       <Row>
         <Col span={9}>
           <Card>
-            {['caesar', 'vigenere'].includes(cipherMethod) && (
+            {['caesar', 'vigenere', 'otp'].includes(cipherMethod) && (
               <Form.Item
                 label="Texto de entrada"
                 name="inputText"
@@ -142,6 +151,7 @@ export const Dashboard: FC = () => {
               <Select onSelect={(data: string) => setCipherMethod(data)}>
                 <Option value="caesar">César</Option>
                 <Option value="vigenere">Vigenère</Option>
+                <Option value="otp">One-time-pad</Option>
                 <Option value="des">DES</Option>
                 <Option value="3des">3DES</Option>
               </Select>
@@ -168,7 +178,7 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['vigenere', 'des', '3des'].includes(cipherMethod) && (
+            {['vigenere', 'des', '3des', 'otp'].includes(cipherMethod) && (
               <Form.Item
                 label="Cifra"
                 name="cipher"
