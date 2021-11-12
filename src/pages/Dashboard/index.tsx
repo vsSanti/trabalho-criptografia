@@ -18,6 +18,7 @@ import {
   desMethod,
   downloadFile,
   otpMethod,
+  playfairMethod,
   vigenereCipher,
 } from './utils';
 
@@ -40,6 +41,9 @@ export const Dashboard: FC = () => {
           break;
         case 'otp':
           outputText = otpMethod(data);
+          break;
+        case 'playfair':
+          outputText = playfairMethod(data);
           break;
         case 'vigenere':
           outputText = vigenereCipher(data);
@@ -101,7 +105,9 @@ export const Dashboard: FC = () => {
       <Row>
         <Col span={9}>
           <Card>
-            {['caesar', 'vigenere', 'otp'].includes(cipherMethod) && (
+            {['caesar', 'vigenere', 'otp', 'playfair'].includes(
+              cipherMethod,
+            ) && (
               <Form.Item
                 label="Texto de entrada"
                 name="inputText"
@@ -152,6 +158,7 @@ export const Dashboard: FC = () => {
                 <Option value="caesar">César</Option>
                 <Option value="vigenere">Vigenère</Option>
                 <Option value="otp">One-time-pad</Option>
+                <Option value="playfair">Playfair</Option>
                 <Option value="des">DES</Option>
                 <Option value="3des">3DES</Option>
               </Select>
@@ -178,7 +185,9 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['vigenere', 'des', '3des', 'otp'].includes(cipherMethod) && (
+            {['vigenere', 'des', '3des', 'otp', 'playfair'].includes(
+              cipherMethod,
+            ) && (
               <Form.Item
                 label="Cifra"
                 name="cipher"
