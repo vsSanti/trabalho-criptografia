@@ -17,6 +17,7 @@ import {
   caesarCipher,
   desMethod,
   downloadFile,
+  hillMethod,
   otpMethod,
   playfairMethod,
   vigenereCipher,
@@ -47,6 +48,9 @@ export const Dashboard: FC = () => {
           break;
         case 'vigenere':
           outputText = vigenereCipher(data);
+          break;
+        case 'hill':
+          outputText = hillMethod(data);
           break;
         case 'des':
         case '3des':
@@ -105,7 +109,7 @@ export const Dashboard: FC = () => {
       <Row>
         <Col span={9}>
           <Card>
-            {['caesar', 'vigenere', 'otp', 'playfair'].includes(
+            {['caesar', 'hill', 'vigenere', 'otp', 'playfair'].includes(
               cipherMethod,
             ) && (
               <Form.Item
@@ -159,6 +163,7 @@ export const Dashboard: FC = () => {
                 <Option value="vigenere">Vigenère</Option>
                 <Option value="otp">One-time-pad</Option>
                 <Option value="playfair">Playfair</Option>
+                <Option value="hill">Hill</Option>
                 <Option value="des">DES</Option>
                 <Option value="3des">3DES</Option>
               </Select>
@@ -185,7 +190,7 @@ export const Dashboard: FC = () => {
               </Form.Item>
             )}
 
-            {['vigenere', 'des', '3des', 'otp', 'playfair'].includes(
+            {['vigenere', 'des', '3des', 'otp', 'playfair', 'hill'].includes(
               cipherMethod,
             ) && (
               <Form.Item
